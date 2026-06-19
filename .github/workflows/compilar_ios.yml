@@ -13,7 +13,7 @@ jobs:
     runs-on: macos-latest # GitHub arranca la Mac virtual por ti aquí
     steps:
       - name: Descargar codigo
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
 
       - name: Instalar Flutter
         uses: subosito/flutter-action@v2

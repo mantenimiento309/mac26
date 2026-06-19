@@ -1,1 +1,45 @@
+name: Compilador Automatico en Mac de GitHub
 
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  construir-ios-en-mac:
+    runs-on: macos-latest # GitHub arranca la Mac virtual por ti aquí
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Descargar librerias
+        run: flutter pub get
+
+      - name: Compilar para iPhone
+        run: flutter build ios --release --no-codesign
+
+      - name: Conectar a Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Configurar gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Comprimir App
+        run: |
+          cd build/ios/iphoneos
+          zip -r AppEntregable.zip Runner.app
+
+      - name: Guardar en la Bodega de Google
+        run: |
+          gcloud storage cp build/ios/iphoneos/AppEntregable.zip gs://${{ secrets.GCP_BUCKET_NAME }}/ios/

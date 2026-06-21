@@ -32,13 +32,9 @@ jobs:
         # Solo llegará a este paso si los pasos 4 y 5 pasaron con éxito
         run: flutter build ios --release --no-codesign
 
-      - name: 7. Empaquetar el resultado en un archivo ZIP
-        run: |
-          cd build/ios/iphoneos
-          zip -r MiApp_iOS.zip Runner.app
-
-      - name: 8. Dejar el archivo listo para descargar en GitHub
+      - name: 7. Dejar el archivo listo para descargar en GitHub
+        # upload-artifact se encarga de comprimir el directorio Runner.app automáticamente en un ZIP seguro
         uses: actions/upload-artifact@v4
         with:
           name: Aplicacion-iOS-Terminada
-          path: build/ios/iphoneos/MiApp_iOS.zip
+          path: build/ios/iphoneos/Runner.app
